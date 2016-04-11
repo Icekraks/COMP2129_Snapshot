@@ -34,32 +34,32 @@ snapshot *snapshot_tail = NULL;
 const char *commands[] = {
         "BYE", //0
         "HELP", //1
-        "LIST KEYS", //3
-        "LIST ENTRIES", //4
-        "LIST SNAPSHOTS", //5
-        "GET", //6
-        "DEL", //7
-        "PURGE", //8
-        "SET", //9
-        "PUSH", //10
-        "APPEND", //11
-        "PICK", //12
-        "PLUCK", //13
-        "POP", //14
-        "DROP", //15
-        "ROLLBACK", //16
-        "CHECKOUT", //17
-        "SNAPSHOT", //18
-        "MIN", //19
-        "MAX", //20
-        "SUM", //21
-        "LEN", //22
-        "REV", //23
-        "UNIQ", //24
-        "SORT", //25
-        "DIFF", //26
-        "INTER", //27
-        "UNION" //28
+        "LIST KEYS", //2
+        "LIST ENTRIES", //3
+        "LIST SNAPSHOTS", //4
+        "GET", //5
+        "DEL", //6
+        "PURGE", //7
+        "SET", //8
+        "PUSH", //9
+        "APPEND", //10
+        "PICK", //11
+        "PLUCK", //12
+        "POP", //13
+        "DROP", //14
+        "ROLLBACK", //15
+        "CHECKOUT", //16
+        "SNAPSHOT", //17
+        "MIN", //18
+        "MAX", //19
+        "SUM", //20
+        "LEN", //21
+        "REV", //22
+        "UNIQ", //23
+        "SORT", //24
+        "DIFF", //25
+        "INTER", //26
+        "UNION" //27
 
 };
 
@@ -71,28 +71,20 @@ void command_help() {
     printf("%s\n", HELP);
 }
 
-//int command_list(snapshot * current_version,int cmdcounter,char *cmd) {
-//    if(){
-//        printf("no keys");
-//    }
-//    if(){
-//        printf("no entries");
-//    }
-//    if(snapshot_head==NULL){
-//        printf("no snapshots");
-//    }
-//}
+void command_list(snapshot *current_version, int cmdcounter, char *cmd, int index_two) {
+
+}
 
 void command_get() {
-    
+
 }
 
 void command_del() {
-
+    printf("ok");
 }
 
 void command_purge() {
-
+    printf("ok");
 }
 
 void command_set() {
@@ -100,70 +92,182 @@ void command_set() {
     printf("ok");
 }
 
-void command_push(){
+void command_push() {
+
+    printf("ok");
+}
+
+void command_append() {
+    printf("ok");
+}
+
+void command_pick() {
 
 }
-void command_append(){
+
+void command_pluck() {
 
 }
-void command_pick(){
+
+void command_pop() {
 
 }
-void command_pluck(){
+
+void command_drop() {
 
 }
-void command_pop(){
+
+void command_rollback() {
+    printf("ok");
+}
+
+void command_checkout() {
 
 }
-void command_drop(){
+
+void command_snapshot() {
 
 }
-void command_rollback(){
+
+void command_min() {
 
 }
-void command_checkout(){
+
+void command_max() {
 
 }
-void command_snapshot(){
+
+void command_sum() {
 
 }
-void command_min(){
+
+void command_len() {
 
 }
-void command_max(){
+
+void command_rev() {
+    printf("ok");
+}
+
+void command_uniq() {
+    printf("ok");
+}
+
+void command_sort() {
+    printf("ok");
+}
+
+void command_diff() {
 
 }
-void command_sum(){
+
+void command_inter() {
 
 }
-void command_len(){
+
+void command_union() {
 
 }
-void command_rev(){
 
-}
-void command_uniq(){
+void command_compare(snapshot *current_version, int cmdcounter, char *cmd) {
+    int i = 0;
+    int index_one = 0;
+    bool isFound = false;
+    while (i < sizeof(commands)) {
 
-}
-void command_sort(){
+        if (strcasecmp(cmd[0], commands[i]) == true) {
+            isFound = true;
+            index_one = i;
+            break;
+        }
+        i++;
+    }
+    if (isFound == false) {
+        return;
+        //incorrect command
+    }
+    if (index_one==2||index_one==3||index_one==4) {
+        char *second_cmd[3] = {"KEYS", "ENTRIES", "SNAPSHOT"};
+        isFound = false;
+        i = 0;
+        int index_two = 0;
+        while (i < sizeof(second_cmd)) {
+            if (strcasecmp(cmd[1], second_cmd[i]) == true) {
+                isFound = true;
+                index_two = i;
+                break;
+            }
+            i++;
+        }
+        if (isFound == false) {
+            return;
+            //incorrect command
+        }
+    }
 
-}
-void command_diff(){
+    if(index_one==0){
+        free(current_version);
+        command_bye();
+    } else if(index_one==1){
+        command_help();
+    } else if(index_one==2){
 
-}
-void command_inter(){
+    } else if(index_one==3){
 
-}
-void command_union(){
+    } else if(index_one==4){
 
-}
-static void command_compare(snapshot * current_version,int cmdcounter,char *cmd){
-    while(i<) {
+    } else if(index_one==5){
 
-        if (strcasecmp(cmd[0], commands[i]))
+    } else if(index_one==6){
+
+    } else if(index_one==7){
+
+    } else if(index_one==8){
+
+    } else if(index_one==9){
+
+    } else if(index_one==10){
+
+    } else if(index_one==11){
+
+    } else if(index_one==12){
+
+    } else if(index_one==13){
+
+    } else if(index_one==14){
+
+    } else if(index_one==15){
+
+    } else if(index_one==16){
+
+    } else if(index_one==17){
+
+    } else if(index_one==18){
+
+    } else if(index_one==19){
+
+    } else if(index_one==20){
+
+    } else if(index_one==21){
+
+    } else if(index_one==22){
+
+    } else if(index_one==23){
+
+    } else if(index_one==24){
+
+    } else if(index_one==25){
+
+    } else if(index_one==26){
+
+    } else if(index_one==27){
+
+    } else if(index_one==28){
+
+    } else {
+        return;
     }
 }
-
 
 int main(void) {
 
@@ -183,14 +287,14 @@ int main(void) {
 
         char *cmd[MAX_COMMAND];
         int i = 0;
-        cmd[i]=strtok(line," ");
+        cmd[i] = strtok(line, " ");
 
-        while(cmd[i]!=NULL){
+        while (cmd[i] != NULL) {
             i++;
-            cmd[i]=strtok(line," ");
+            cmd[i] = strtok(line, " ");
         }
         int cmdcounter = i;
-        command_compare(current_version, cmdcounter, cmd);
+        command_compare(current_version, cmdcounter, *cmd);
 
     }
     free(current_version);
