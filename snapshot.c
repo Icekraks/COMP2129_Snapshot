@@ -99,19 +99,27 @@ void command_purge() {
 
 void command_set(int *cmd_counter, char *cmd) {
     if (entry_head == NULL) {
-        set_creation(*cmd_counter, *cmd);
+        entry_head = set_creation(*cmd_counter, *cmd);
+		entry_tail = set_creation(*cmd_counter, *cmd);
     }
-
+	if(entry_head != NULL) {
+		entry *new_entry = malloc(sizeof(entry));
+		strcpy(new_entry->key, cmd[1]);
+		new_entry->length = (*cmd_counter - 1);
+		new_entry->next = NULL;
+		new_entry->prev =;
+	}
     printf("ok");
 }
 
-void set_creation(int *cmd_counter, char *cmd) {
+entry * set_creation(int *cmd_counter, char *cmd) {
 
     entry *new_entry = malloc(sizeof(entry));
     strcpy(new_entry->key,cmd[1]);
     new_entry->length = (*cmd_counter - 1);
     new_entry->next = NULL;
     new_entry->prev = NULL;
+	return new_entry;
 
 }
 
