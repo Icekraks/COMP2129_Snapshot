@@ -13,8 +13,7 @@
   <component name="ChangeListManager">
     <list default="true" id="bcdbe457-dacf-44d7-9511-7e946e248b5b" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/a.out" afterPath="$PROJECT_DIR$/a.out" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/a.out.dSYM/Contents/Resources/DWARF/a.out" afterPath="$PROJECT_DIR$/a.out.dSYM/Contents/Resources/DWARF/a.out" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Experiment Files/test.c" afterPath="$PROJECT_DIR$/Experiment Files/test.c" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/snapshot.c" afterPath="$PROJECT_DIR$/snapshot.c" />
     </list>
     <ignored path="COMP2129_Assignment2.iws" />
@@ -46,22 +45,24 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="snapshot.c" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/snapshot.c">
+      <file leaf-file-name="snapshot.h" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/snapshot.h">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="735">
-              <caret line="203" column="31" selection-start-line="203" selection-start-column="31" selection-end-line="203" selection-end-column="31" />
+            <state relative-caret-position="-225">
+              <caret line="5" column="22" selection-start-line="5" selection-start-column="22" selection-end-line="5" selection-end-column="22" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="snapshot.h" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/snapshot.h">
+      <file leaf-file-name="snapshot.c" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/snapshot.c">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="420">
-              <caret line="29" column="49" selection-start-line="29" selection-start-column="42" selection-end-line="29" selection-end-column="49" />
-              <folding />
+            <state relative-caret-position="120">
+              <caret line="276" column="3" selection-start-line="276" selection-start-column="3" selection-end-line="314" selection-end-column="17" />
+              <folding>
+                <element signature="e#64#82#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -369,7 +370,7 @@
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <option name="time" value="3" />
+      <option name="time" value="4" />
     </breakpoint-manager>
     <watches-manager />
   </component>
@@ -415,6 +416,14 @@
       </provider>
     </entry>
     <entry file="file://$USER_HOME$/Desktop/CoffeeBot.java" />
+    <entry file="file:///usr/include/search.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="300">
+          <caret line="22" column="9" selection-start-line="22" selection-start-column="9" selection-end-line="22" selection-end-column="9" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/CMakeLists.txt">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
@@ -425,17 +434,19 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/snapshot.h">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="420">
-          <caret line="29" column="49" selection-start-line="29" selection-start-column="42" selection-end-line="29" selection-end-column="49" />
+        <state relative-caret-position="-225">
+          <caret line="5" column="22" selection-start-line="5" selection-start-column="22" selection-end-line="5" selection-end-column="22" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/snapshot.c">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="735">
-          <caret line="203" column="31" selection-start-line="203" selection-start-column="31" selection-end-line="203" selection-end-column="31" />
-          <folding />
+        <state relative-caret-position="120">
+          <caret line="276" column="3" selection-start-line="276" selection-start-column="3" selection-end-line="314" selection-end-column="17" />
+          <folding>
+            <element signature="e#64#82#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>

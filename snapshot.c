@@ -1,7 +1,7 @@
 /**
  * comp2129 - assignment 2
- * <your name>
- * <your unikey>
+ * <Felix Hu>
+ * <fehu4705>
  */
 
 #include <stdio.h>
@@ -133,6 +133,9 @@ void command_list(int index_two) {
 }
 
 void command_get(char *cmd) {
+    if (entry_head == NULL) {
+        printf("no key");
+    }
     entry *temp = entry_head;
     while (temp->next != NULL) {
         int compare = strcasecmp(temp->key, cmd[1]);
@@ -153,34 +156,67 @@ void command_get(char *cmd) {
     }
 }
 
-void command_del() {
+void command_del(char *cmd) {
+    entry *current_version = entry_head;
+    while(current_version->next != NULL){
+        int result = strcmp(current_version->key,cmd[1]);
+        if(result==0){
+            entry * temp = current_version->prev;
+            entry * temp2 = current_version->next;
+            free(current_version->values);
+            free(current_version->key);
+            temp->next = temp2;
+            temp2->prev = temp;
+        }
+
+        if(current_version->next==NULL) {
+            printf("No Key");
+            return;
+        }
+        current_version = current_version->next;
+    }
     printf("ok\n");
 }
 
 void command_purge() {
     printf("ok\n");
 }
-
+//method is only run when there is no entries in entries
 entry *set_creation(int cmd_counter, char *cmd) {
 
-    entry *new_entry = malloc(sizeof(entry));
+    entry *new_entry = malloc(sizeof(new_entry));
     strcpy(new_entry->key, cmd[1]);
+    int value_size = (sizeof(new_entry->values));
+    new_entry->values = malloc((cmd_counter - 1) * value_size);
+    for (int i = 1; i < cmd_counter - 2; i++) {
+        strcpy(new_entry->values[i], cmd[i]);
+    }
     new_entry->length = (cmd_counter - 2);
     new_entry->next = NULL;
     new_entry->prev = NULL;
     return new_entry;
 
 }
-
+/*
+ * Method below and helper method above sets the values of the
+ */
 void command_set(int cmd_counter, char **cmd) {
+    //If there is no entries in the linked list.
     if (entry_head == NULL) {
         entry_head = set_creation(cmd_counter, *cmd);
         printf("ok\n");
         return;
     }
-    if (entry_head != NULL && entry_head->next == NULL) {
-        entry *new_entry = malloc(sizeof(entry));
+    int result = (strcasecmp(entry_head->key,cmd[1]));
+    //If there is one entry in the linked list.
+    if (entry_head != NULL && entry_head->next == NULL && result == 0) {
+        entry *new_entry = malloc(sizeof(new_entry));
         strcpy(new_entry->key, cmd[1]);
+        int value_size = (sizeof(new_entry->values));
+        new_entry->values = malloc((cmd_counter - 1) * value_size);
+        for (int i = 1; i < cmd_counter - 2; i++) {
+            strcpy(new_entry->values[i], cmd[i]);
+        }
         new_entry->length = (cmd_counter - 2);
         new_entry->next = NULL;
         new_entry->prev = entry_head;
@@ -188,16 +224,41 @@ void command_set(int cmd_counter, char **cmd) {
         printf("ok\n");
         return;
     }
+    //If there is multiple entries in the linked list.
     if (entry_head != NULL && entry_head->next != NULL) {
         entry *temp = entry_head;
         while (temp->next != NULL) {
+            //If the key already exists and the values are being updated.
+            int result = strcasecmp((temp->key), cmd[1]);
+            if (result == 0) {
+                int i = 0;
+                while (temp->values != NULL) {
+                    free(temp->values);
+                    i++;
+                }
+                i = 1;
+                while (cmd != NULL) {
+                    int value_size = (sizeof(temp->values));
+                    temp->values = malloc((cmd_counter - 1) * value_size);
+                    for (int i = 1; i < cmd_counter - 2; i++) {
+                        temp->values[i] = atoi(cmd[i]);
+                    }
+                }
+                return;
+            }
             if (temp->next == NULL) {
                 break;
             }
             temp = temp->next;
         }
-        entry *new_entry = malloc(sizeof(entry));
+        //If the key doesnt exist but there is more than two entries.
+        entry *new_entry = malloc(sizeof(new_entry));
         strcpy(new_entry->key, cmd[1]);
+        int value_size = (sizeof(new_entry->values));
+        new_entry->values = malloc((cmd_counter - 1) * value_size);
+        for (int i = 1; i < cmd_counter - 2; i++) {
+            strcpy(new_entry->values[i], cmd[i]);
+        }
         new_entry->length = (cmd_counter - 2);
         new_entry->next = NULL;
         new_entry->prev = temp;
@@ -209,14 +270,79 @@ void command_set(int cmd_counter, char **cmd) {
 
 }
 
+/*
+ * Method that handles the push where the values are added to the front of the value list.
+ */
+void command_push(int cmd_counter, char *cmd) {
+    entry *temp = entry_head;
+    while (temp->next != NULL) {
+        //If the key already exists and the values are being updated.
+        int result = strcasecmp((temp->key), cmd[1]);
+        if (result == 0) {
+            int old_index = sizeof(temp->values)/ sizeof(temp->values[1]);
+            int new_size = sizeof(temp->values) + (sizeof(cmd[1]) * (cmd_counter - 1));
+            int temporary_reorganise[(old_index+1)];
+            for(int i = 1;i<(old_index+!1);i++){
+                int temporary_reorganise[i] = temp->values[i];
+            }
 
-void command_push() {
+            temp->values = realloc(temp->values, new_size);
+            int new_index = sizeof(temp->values)/ sizeof(temp->values[1]);
+            for (int i = (old_index+1); i < (new_index+1); i++) {
+                temp->values[i] = atoi(cmd[i]);
+            }
+            int i = 1;
+            int j = (sizeof(temporary_reorganise))/ (sizeof(temporary_reorganise[1]));
+            while(temporary_reorganise!=NULL){
+                temp->values[old_index+i] = temporary_reorganise[j];
+                if(j = 1){
+                    break;
+                }
+                j--;
+                i++;
+            }
+            printf("ok");
+            return;
+        }
+        if(temp->next==NULL){
+            printf("key doesnt exist");
+            return;
+        }
+        temp = temp->next;
+
+    }
 
     printf("ok");
 }
 
-void command_append() {
-    printf("ok");
+/*
+ * Method handles the user appending, the assumption is that there is a entry in the linked list.
+ * the values are appended or added to the end of the values for the entry.
+ */
+
+void command_append(int cmd_counter, char *cmd) {
+    entry *temp = entry_head;
+    while (temp->next != NULL) {
+        //If the key already exists and the values are being updated.
+        int result = strcasecmp((temp->key), cmd[1]);
+        if (result == 0) {
+            int old_index = sizeof(temp->values)/ sizeof(temp->values[1]);
+            int new_size = sizeof(temp->values) + (sizeof(cmd[1]) * (cmd_counter - 1));
+            temp->values = realloc(temp->values, new_size);
+            int new_index = sizeof(temp->values)/ sizeof(temp->values[1]);
+            for (int i = (old_index+1); i < (new_index+1); i++) {
+                temp->values[i] = atoi(cmd[i]);
+            }
+            printf("ok");
+            return;
+        }
+        if(temp->next==NULL){
+            printf("key doesnt exist");
+            return;
+        }
+        temp = temp->next;
+
+    }
 }
 
 void command_pick() {
@@ -336,15 +462,15 @@ void command_compare(int cmd_counter, char **cmd) {
     } else if (index_one == 2) {
         command_get(*cmd);
     } else if (index_one == 3) {
-
+        command_del(*cmd);
     } else if (index_one == 4) {
 
     } else if (index_one == 5) {
-        command_set(cmd_counter, cmd);
+        command_set(cmd_counter, *cmd);
     } else if (index_one == 6) {
 
     } else if (index_one == 7) {
-
+        command_append(cmd_counter, *cmd);
     } else if (index_one == 8) {
 
     } else if (index_one == 9) {
