@@ -6,6 +6,7 @@ int main(){
 "KEYS", "ENTRIES", "SNAPSHOT"
 
 	};
+	int numbers[5] = {1,2,3,4,5};
 	int test_array[3]={1, 2, 3};
 	int number = sizeof(test_array);
 	int number_div = number/sizeof(test_array[0]);
@@ -19,6 +20,16 @@ int main(){
 	int x,y;
   x = strcmp(commands[0],test);
 	y = strcasecmp(commands[0],test);
+	for(int i = 0;i<5;i++){
+				printf("%d\n",numbers[i]);
+		}
+	int backwards[5];
+	for(int i = 0;i<5;i++){
+        backwards[i]=numbers[4-i];
+    }
+		for(int i = 0;i<5;i++){
+	        printf("%d\n",backwards[i]);
+	    }
 
 	printf("%d %d",x,y);
 }
