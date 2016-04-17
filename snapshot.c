@@ -66,6 +66,58 @@ const char *commands[26] = {
 
 };
 
+void static free_key() {
+
+}
+
+
+void static free_values(entry *key) {
+    free(key->values);
+    key->values = NULL;
+}
+
+static entry * find_key(snapshot *current_snapshot, char *key){
+    entry * curr = current_snapshot->entries;
+    entry * found = NULL;
+
+    while(curr!=NULL && found==NULL){
+        int result = strcmp(curr->key,key);
+        if(result == 0){
+            found = curr;
+            return found;
+        }
+        curr->next;
+    }
+    return NULL;
+}
+static entry * make_or_find_key(snapshot * current_snapshot, char *key){
+    entry * curr = current_snapshot->entries;
+    entry * found = NULL;
+
+    while(curr!=NULL && found==NULL){
+        int result = strcmp(curr->key,key);
+        if(result == 0){
+            found = curr;
+            return found;
+        }
+        curr->next;
+    }
+    if(found==NULL){
+        found = malloc(sizeof(entry));
+        strcpy(found->key,key);
+        found->prev=NULL;
+        found->next=NULL;
+
+        entry * temp = current_snapshot->entries;
+        found->next = temp;
+        if(temp!=NULL){
+            temp->prev = found;
+        }
+        current_snapshot->entries = found;
+    }
+
+}
+
 void command_bye() {
     //free all memory....
     printf("bye\n");
@@ -75,244 +127,95 @@ void command_help() {
     printf("%s\n", HELP);
 }
 
-void command_list(int index_two) {
-    if (index_two == 0) {
-        if (entry_head == NULL) {
-            printf("no keys\n");
-            return;
-        }
-        entry *temp = entry_head;
-        while (temp->next != NULL) {
-            printf("%s\n", temp->key);
-            if (temp->next == NULL) {
-                return;
-            }
-            temp = temp->next;
-        }
-
-    }
-    else if (index_two == 1) {
-        if (entry_head == NULL) {
-            printf("no entries\n");
-            return;
-        }
-        entry *temp = entry_head;
-        while (temp->next != NULL) {
-            printf("%s ", temp->key);
-            printf("[");
-            int size = sizeof(temp->values) / sizeof(temp->values[0]);
-            for (int i = 0; i < size; i++) {
-                printf("%s ", temp->values[i]);
-            }
-            printf("]");
-            if (temp->next == NULL) {
-                return;
-            }
-            temp = temp->next;
-        }
-    }
-    else if (index_two == 2) {
-        if (snapshot_head == NULL) {
-            printf("no snapshots\n");
-            return;
-        }
-        snapshot *temp = entry_head;
-
-        while (temp->next != NULL) {
-            printf("%s ", temp->id);
-            if (temp->next == NULL) {
-                return;
-            }
-            temp = temp->next;
-        }
-    }
-    else {
+void command_listkeys(snapshot *current_snapshot) {
+    entry *temp = current_snapshot->entries;
+    if (entry_head == NULL) {
+        printf("no keys\n");
         return;
     }
-
-}
-
-void command_get(char *cmd) {
-    if (entry_head == NULL) {
-        printf("no key");
-    }
-    entry *temp = entry_head;
     while (temp->next != NULL) {
-        int compare = strcasecmp(temp->key, cmd[1]);
-        if (compare == 0) {
-            int size = sizeof(temp->values) / sizeof(temp->values[0]);
-            printf("[");
-            for (int i = 0; i < size; i++) {
-                printf("%d", temp->values[i]);
-            }
-            printf("]\n");
+        printf("%s\n", temp->key);
+        if (temp->next == NULL) {
             return;
         }
+        current_snapshot = current_snapshot->next;
+    }
+}
+
+void command_listentries(snapshot *current_snapshot) {
+    if (entry_head == NULL) {
+        printf("no entries\n");
+        return;
+    }
+    entry *temp = current_snapshot->entries;
+    while (temp->next != NULL) {
+        printf("%s ", temp->key);
+        printf("[");
+        int size = sizeof(temp->values) / sizeof(temp->values[0]);
+        for (int i = 0; i < size; i++) {
+            printf("%s ", temp->values[i]);
+        }
+        printf("]");
         if (temp->next == NULL) {
-            printf("no key\n");
             return;
         }
         temp = temp->next;
     }
 }
 
-void command_del(char *cmd) {
-    entry *current_version = entry_head;
-    while(current_version->next != NULL){
-        int result = strcmp(current_version->key,cmd[1]);
-        if(result==0){
-            entry * temp = current_version->prev;
-            entry * temp2 = current_version->next;
-            free(current_version->values);
-            free(current_version->key);
-            temp->next = temp2;
-            temp2->prev = temp;
-        }
+void command_listsnapshots(snapshot *current_snapshot) {
+    if (snapshot_head == NULL) {
+        printf("no snapshots\n");
+        return;
+    }
+    snapshot * temp = current_snapshot->entries;
 
-        if(current_version->next==NULL) {
-            printf("No Key");
+    while (temp->next != NULL) {
+        printf("%s ", temp->id);
+        if (temp->next == NULL) {
             return;
         }
-        current_version = current_version->next;
+        temp = temp->next;
     }
-    printf("ok\n");
+}
+
+void command_get(snapshot * current_snapshot,char *cmd) {
+    entry * key = find_key(current_snapshot,cmd[1]);
+    if (key == NULL) {
+        printf("no key");
+        return;
+    }
+    int *values = key->values;
+    printf("[");
+    for(int i = 0;i<key->length;i++){
+        printf("%d",values[i]);
+        if (i < key->length - 1) {
+            printf(" ");
+        }
+    }
+    printf("]\n");
+
+}
+
+void command_del(char *cmd) {
+
 }
 
 void command_purge() {
     printf("ok\n");
 }
 //method is only run when there is no entries in entries
-entry *set_creation(int cmd_counter, char *cmd) {
-
-    entry *new_entry = malloc(sizeof(new_entry));
-    strcpy(new_entry->key, cmd[1]);
-    int value_size = (sizeof(new_entry->values));
-    new_entry->values = malloc((cmd_counter - 1) * value_size);
-    for (int i = 1; i < cmd_counter - 2; i++) {
-        strcpy(new_entry->values[i], cmd[i]);
-    }
-    new_entry->length = (cmd_counter - 2);
-    new_entry->next = NULL;
-    new_entry->prev = NULL;
-    return new_entry;
-
-}
 /*
  * Method below and helper method above sets the values of the
  */
-void command_set(int cmd_counter, char **cmd) {
-    //If there is no entries in the linked list.
-    if (entry_head == NULL) {
-        entry_head = set_creation(cmd_counter, *cmd);
-        printf("ok\n");
-        return;
-    }
-    int result = (strcasecmp(entry_head->key,cmd[1]));
-    //If there is one entry in the linked list.
-    if (entry_head != NULL && entry_head->next == NULL && result == 0) {
-        entry *new_entry = malloc(sizeof(new_entry));
-        strcpy(new_entry->key, cmd[1]);
-        int value_size = (sizeof(new_entry->values));
-        new_entry->values = malloc((cmd_counter - 1) * value_size);
-        for (int i = 1; i < cmd_counter - 2; i++) {
-            strcpy(new_entry->values[i], cmd[i]);
-        }
-        new_entry->length = (cmd_counter - 2);
-        new_entry->next = NULL;
-        new_entry->prev = entry_head;
-        entry_head->next = new_entry;
-        printf("ok\n");
-        return;
-    }
-    //If there is multiple entries in the linked list.
-    if (entry_head != NULL && entry_head->next != NULL) {
-        entry *temp = entry_head;
-        while (temp->next != NULL) {
-            //If the key already exists and the values are being updated.
-            int result = strcasecmp((temp->key), cmd[1]);
-            if (result == 0) {
-                int i = 0;
-                while (temp->values != NULL) {
-                    free(temp->values);
-                    i++;
-                }
-                i = 1;
-                while (cmd != NULL) {
-                    int value_size = (sizeof(temp->values));
-                    temp->values = malloc((cmd_counter - 1) * value_size);
-                    for (int i = 1; i < cmd_counter - 2; i++) {
-                        temp->values[i] = atoi(cmd[i]);
-                    }
-                }
-                return;
-            }
-            if (temp->next == NULL) {
-                break;
-            }
-            temp = temp->next;
-        }
-        //If the key doesnt exist but there is more than two entries.
-        entry *new_entry = malloc(sizeof(new_entry));
-        strcpy(new_entry->key, cmd[1]);
-        int value_size = (sizeof(new_entry->values));
-        new_entry->values = malloc((cmd_counter - 1) * value_size);
-        for (int i = 1; i < cmd_counter - 2; i++) {
-            strcpy(new_entry->values[i], cmd[i]);
-        }
-        new_entry->length = (cmd_counter - 2);
-        new_entry->next = NULL;
-        new_entry->prev = temp;
-        temp->next = new_entry;
-        entry_tail = new_entry;
-        printf("ok\n");
-        return;
-    }
+void command_set(snapshot * current_snapshot,int cmd_counter, char **cmd) {
 
+    entry * key = make_or_find_key(current_snapshot,cmd[1]);
 }
 
-/*
- * Method that handles the push where the values are added to the front of the value list.
- */
+
 void command_push(int cmd_counter, char *cmd) {
-    entry *temp = entry_head;
-    while (temp->next != NULL) {
-        //If the key already exists and the values are being updated.
-        int result = strcasecmp((temp->key), cmd[1]);
-        if (result == 0) {
-            int old_index = sizeof(temp->values)/ sizeof(temp->values[1]);
-            int new_size = sizeof(temp->values) + (sizeof(cmd[1]) * (cmd_counter - 1));
-            int temporary_reorganise[(old_index+1)];
-            for(int i = 1;i<(old_index+!1);i++){
-                int temporary_reorganise[i] = temp->values[i];
-            }
 
-            temp->values = realloc(temp->values, new_size);
-            int new_index = sizeof(temp->values)/ sizeof(temp->values[1]);
-            for (int i = (old_index+1); i < (new_index+1); i++) {
-                temp->values[i] = atoi(cmd[i]);
-            }
-            int i = 1;
-            int j = (sizeof(temporary_reorganise))/ (sizeof(temporary_reorganise[1]));
-            while(temporary_reorganise!=NULL){
-                temp->values[old_index+i] = temporary_reorganise[j];
-                if(j = 1){
-                    break;
-                }
-                j--;
-                i++;
-            }
-            printf("ok");
-            return;
-        }
-        if(temp->next==NULL){
-            printf("key doesnt exist");
-            return;
-        }
-        temp = temp->next;
-
-    }
-
-    printf("ok");
 }
 
 /*
@@ -320,29 +223,8 @@ void command_push(int cmd_counter, char *cmd) {
  * the values are appended or added to the end of the values for the entry.
  */
 
-void command_append(int cmd_counter, char *cmd) {
-    entry *temp = entry_head;
-    while (temp->next != NULL) {
-        //If the key already exists and the values are being updated.
-        int result = strcasecmp((temp->key), cmd[1]);
-        if (result == 0) {
-            int old_index = sizeof(temp->values)/ sizeof(temp->values[1]);
-            int new_size = sizeof(temp->values) + (sizeof(cmd[1]) * (cmd_counter - 1));
-            temp->values = realloc(temp->values, new_size);
-            int new_index = sizeof(temp->values)/ sizeof(temp->values[1]);
-            for (int i = (old_index+1); i < (new_index+1); i++) {
-                temp->values[i] = atoi(cmd[i]);
-            }
-            printf("ok");
-            return;
-        }
-        if(temp->next==NULL){
-            printf("key doesnt exist");
-            return;
-        }
-        temp = temp->next;
+void command_append(snapshot * current_snapshot, int cmd_counter, char *cmd) {
 
-    }
 }
 
 void command_pick() {
@@ -414,7 +296,7 @@ void command_union() {
 
 }
 
-void command_compare(int cmd_counter, char **cmd) {
+void command_compare(snapshot *current_snapshot, int cmd_counter, char **cmd) {
     int i = 0;
     int index_one;
     int index_two;
@@ -460,17 +342,17 @@ void command_compare(int cmd_counter, char **cmd) {
     } else if (index_one == 1) {
         command_help();
     } else if (index_one == 2) {
-        command_get(*cmd);
+        command_get(current_snapshot,*cmd);
     } else if (index_one == 3) {
         command_del(*cmd);
     } else if (index_one == 4) {
 
     } else if (index_one == 5) {
-        command_set(cmd_counter, *cmd);
+        command_set(current_snapshot,cmd_counter, *cmd);
     } else if (index_one == 6) {
 
     } else if (index_one == 7) {
-        command_append(cmd_counter, *cmd);
+        command_append(current_snapshot,cmd_counter, *cmd);
     } else if (index_one == 8) {
 
     } else if (index_one == 9) {
@@ -506,7 +388,10 @@ void command_compare(int cmd_counter, char **cmd) {
     } else if (index_one == 24) {
 
     } else if (index_one == 25 && (index_two == 0 || index_two == 1 || index_two == 2)) {
-        command_list(index_two);
+        if (index_two == 0) command_listkeys(current_snapshot);
+        if (index_two == 1) command_listentries(current_snapshot);
+        if (index_two == 2) command_listsnapshots(current_snapshot);
+        else return;
     } else {
         return;
     }
@@ -517,7 +402,10 @@ int main(void) {
      * Main function that handles the user input by breaking the string up into its components.
      */
     char line[MAX_LINE];
-
+    snapshot *current_snap = malloc(sizeof(snapshot));
+    current_snap->entries = NULL;
+    current_snap->next = NULL;
+    current_snap->prev = NULL;
 
     while (true) {
         printf("> ");
@@ -536,7 +424,8 @@ int main(void) {
             cmd[i] = strtok(NULL, " ");
         }
         int cmd_counter = i;
-        command_compare(cmd_counter, cmd);
+        command_compare(current_snap, cmd_counter, cmd);
     }
-    return 0;
+    free(current_snap);
+    return EXIT_SUCCESS;
 }
