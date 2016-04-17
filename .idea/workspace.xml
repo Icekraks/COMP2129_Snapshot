@@ -12,7 +12,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="bcdbe457-dacf-44d7-9511-7e946e248b5b" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/a.out" afterPath="$PROJECT_DIR$/a.out" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/snapshot.c" afterPath="$PROJECT_DIR$/snapshot.c" />
     </list>
     <ignored path="COMP2129_Assignment2.iws" />
@@ -47,7 +47,7 @@
       <file leaf-file-name="snapshot.h" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/snapshot.h">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="75">
+            <state relative-caret-position="-220">
               <caret line="5" column="22" selection-start-line="5" selection-start-column="22" selection-end-line="5" selection-end-column="22" />
               <folding />
             </state>
@@ -57,8 +57,8 @@
       <file leaf-file-name="snapshot.c" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/snapshot.c">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-218">
-              <caret line="116" column="5" selection-start-line="116" selection-start-column="5" selection-end-line="116" selection-end-column="5" />
+            <state relative-caret-position="3650">
+              <caret line="457" column="1" selection-start-line="457" selection-start-column="1" selection-end-line="457" selection-end-column="1" />
               <folding>
                 <element signature="e#64#82#0" expanded="true" />
               </folding>
@@ -453,7 +453,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/snapshot.h">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="75">
+        <state relative-caret-position="-220">
           <caret line="5" column="22" selection-start-line="5" selection-start-column="22" selection-end-line="5" selection-end-column="22" />
           <folding />
         </state>
@@ -461,8 +461,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/snapshot.c">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-218">
-          <caret line="116" column="5" selection-start-line="116" selection-start-column="5" selection-end-line="116" selection-end-column="5" />
+        <state relative-caret-position="3650">
+          <caret line="457" column="1" selection-start-line="457" selection-start-column="1" selection-end-line="457" selection-end-column="1" />
           <folding>
             <element signature="e#64#82#0" expanded="true" />
           </folding>
