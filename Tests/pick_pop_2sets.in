@@ -1,0 +1,11 @@
+set a 1 2 3 4 5
+get a
+pick 2
+get a
+pop a
+get a
+set b 3 4 5 6
+pop b
+get b
+list keys
+bye

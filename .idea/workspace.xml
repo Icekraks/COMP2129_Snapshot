@@ -12,11 +12,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="bcdbe457-dacf-44d7-9511-7e946e248b5b" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Experiment Files/a.out" afterPath="$PROJECT_DIR$/Experiment Files/a.out" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Experiment Files/test.c" afterPath="$PROJECT_DIR$/Experiment Files/test.c" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/a.out" afterPath="$PROJECT_DIR$/a.out" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/a.out.dSYM/Contents/Resources/DWARF/a.out" afterPath="$PROJECT_DIR$/a.out.dSYM/Contents/Resources/DWARF/a.out" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/snapshot.c" afterPath="$PROJECT_DIR$/snapshot.c" />
     </list>
     <ignored path="COMP2129_Assignment2.iws" />
@@ -51,8 +47,8 @@
       <file leaf-file-name="snapshot.h" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/snapshot.h">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="75">
-              <caret line="5" column="22" selection-start-line="5" selection-start-column="22" selection-end-line="5" selection-end-column="22" />
+            <state relative-caret-position="-100">
+              <caret line="15" column="14" selection-start-line="15" selection-start-column="14" selection-end-line="15" selection-end-column="14" />
               <folding />
             </state>
           </provider>
@@ -61,8 +57,8 @@
       <file leaf-file-name="snapshot.c" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/snapshot.c">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-3983">
-              <caret line="163" column="12" selection-start-line="163" selection-start-column="12" selection-end-line="163" selection-end-column="12" />
+            <state relative-caret-position="233">
+              <caret line="420" column="39" selection-start-line="420" selection-start-column="39" selection-end-line="420" selection-end-column="39" />
               <folding>
                 <element signature="e#64#82#0" expanded="true" />
               </folding>
@@ -481,18 +477,26 @@
         </state>
       </provider>
     </entry>
+    <entry file="file:///usr/include/term_entry.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="975">
+          <caret line="66" column="21" selection-start-line="66" selection-start-column="21" selection-end-line="66" selection-end-column="21" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/snapshot.h">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="75">
-          <caret line="5" column="22" selection-start-line="5" selection-start-column="22" selection-end-line="5" selection-end-column="22" />
+        <state relative-caret-position="-100">
+          <caret line="15" column="14" selection-start-line="15" selection-start-column="14" selection-end-line="15" selection-end-column="14" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/snapshot.c">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-3983">
-          <caret line="163" column="12" selection-start-line="163" selection-start-column="12" selection-end-line="163" selection-end-column="12" />
+        <state relative-caret-position="233">
+          <caret line="420" column="39" selection-start-line="420" selection-start-column="39" selection-end-line="420" selection-end-column="39" />
           <folding>
             <element signature="e#64#82#0" expanded="true" />
           </folding>

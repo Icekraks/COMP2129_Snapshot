@@ -1,0 +1,10 @@
+set a 1 2 3
+set b 4 5 6
+min a
+max b
+list keys
+len a
+len b
+del a
+sum b
+bye
