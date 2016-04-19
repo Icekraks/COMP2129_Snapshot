@@ -105,6 +105,9 @@ static entry *make_or_find_key(snapshot *current_snapshot, char *key) {
 
         entry *temp = current_snapshot->entries;
         found->next = temp;
+        if (temp==NULL){
+            entry_head = found;
+        }
         if (temp != NULL) {
             temp->prev = found;
             entry_tail = found;
@@ -267,7 +270,9 @@ void command_purge() {
 void command_set(snapshot *current_snapshot, int cmd_counter, char **cmd) {
 
     entry *new_entry = make_or_find_key(current_snapshot, cmd[1]);
-    free_values(new_entry);
+    if(entry_head!=NULL) {
+        free_values(new_entry);
+    }
     new_entry->values = (int *) malloc((cmd_counter - 2) * sizeof(int));
     for (int i = 2; i < cmd_counter; i++) {
         new_entry->values[i - 2] = atoi(cmd[i]);
@@ -399,11 +404,16 @@ void command_pluck(snapshot *current_snapshot, char **cmd) {
         holding_array[i] = current_entry->values[i];
     }
 
-
-    for (int i = index; i < current_entry->length - 1; i++) {
-        current_entry->values[i] = current_entry->values[i + 1];
-    }
+    free_values(current_entry);
     current_entry->length = current_entry->length - 1;
+    current_entry->values = malloc(sizeof(int)*current_entry->length);
+    for(int z = 0 ;z<index;z++){
+        current_entry->values[z] = holding_array[z];
+    }
+    for(int z = index;z<current_entry->length;z++){
+        current_entry->values[z] = holding_array[z+1];
+    }
+
     printf("\n");
 }
 
@@ -418,13 +428,25 @@ void command_pop(snapshot *current_snapshot, char **cmd) {
         printf("\n");
         return;
     }
+    if (current_entry->length==0) {
+        printf("nil\n");
+        printf("\n");
+        return;
+    }
     int value = current_entry->values[0];
     printf("%d\n", value);
-
-    for (int i = 0; i < current_entry->length - 1; i++) {
-        current_entry->values[i] = current_entry->values[i + 1];
+    int holding_array[current_entry->length-1];
+    for (int i = 0; i < current_entry->length; i++) {
+        holding_array[i] = current_entry->values[i+1];
     }
+
+    free_values(current_entry);
     current_entry->length = current_entry->length - 1;
+    current_entry->values = malloc(sizeof(int)*current_entry->length);
+    for(int z = 0 ;z<current_entry->length;z++){
+        current_entry->values[z] = holding_array[z];
+    }
+
     printf("\n");
 }
 
@@ -544,7 +566,23 @@ void command_rev(snapshot *current_snapshot, char **cmd) {
 }
 
 void command_uniq(snapshot *current_snapshot, char **cmd) {
-    //similar to pluck
+//    entry *current_entry = find_key(current_snapshot, cmd[1]);
+//    if (current_entry == NULL) {
+//        printf("no such key\n");
+//        printf("\n");
+//        return;
+//    }
+//    int length = current_entry->length;
+//    int holding_array[length];
+//    for (int i = 0; i < length; i++) {
+//        holding_array[i] = current_entry->values[i];
+//    }
+//    int repeat = 0;
+//    for(int i = 0;i<length;i++){
+//        if(i!=length-1){
+//
+//        }
+//    }
     printf("ok\n");
 }
 
