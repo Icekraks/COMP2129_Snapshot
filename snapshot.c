@@ -33,45 +33,46 @@ snapshot *snapshot_tail = NULL;
 //
 
 const char *commands[26] = {
-        "BYE", //0
-        "HELP", //
-        "GET", //2
-        "DEL", //3
-        "PURGE", //4
-        "SET", //5
-        "PUSH", //6
-        "APPEND", //7
-        "PICK", //8
-        "PLUCK", //9
-        "POP", //10
-        "DROP", //11
+        "BYE",      //0
+        "HELP",     //1
+        "GET",      //2
+        "DEL",      //3
+        "PURGE",    //4
+        "SET",      //5
+        "PUSH",     //6
+        "APPEND",   //7
+        "PICK",     //8
+        "PLUCK",    //9
+        "POP",      //10
+        "DROP",     //11
         "ROLLBACK", //12
         "CHECKOUT", //13
         "SNAPSHOT", //14
-        "MIN", //15
-        "MAX", //16
-        "SUM", //17
-        "LEN", //18
-        "REV", //19
-        "UNIQ", //20
-        "SORT", //21
-        "DIFF", //22
-        "INTER", //23
-        "UNION", //24
-        "LIST" //25
+        "MIN",      //15
+        "MAX",      //16
+        "SUM",      //17
+        "LEN",      //18
+        "REV",      //19
+        "UNIQ",     //20
+        "SORT",     //21
+        "DIFF",     //22
+        "INTER",    //23
+        "UNION",    //24
+        "LIST"      //25
 //        "LIST KEYS", //26
 //        "LIST ENTRIES", //27
 //        "LIST SNAPSHOTS", //28
 
 };
+int snapshot_id = 1;
 
 void static free_values(entry *key) {
     free(key->values);
     key->values = NULL;
 }
 
-static entry *find_key(snapshot *current_snapshot, char *key) {
-    entry *curr = current_snapshot->entries;
+static entry *find_key(char *key) {
+    entry *curr = entry_head;
     entry *found = NULL;
 
     while (curr != NULL && found == NULL) {
@@ -85,55 +86,76 @@ static entry *find_key(snapshot *current_snapshot, char *key) {
     return NULL;
 }
 
-static entry *make_or_find_key(snapshot *current_snapshot, char *key) {
-    entry *curr = current_snapshot->entries;
-    entry *found = NULL;
+static entry *populate_snapshot() {
+    entry *live_entries = entry_head;
+    entry *snap_entry_head = NULL;
+    entry *snap_entry_tail = NULL;
+    while (live_entries->next != NULL) {
+        int length = live_entries->length;
+        entry *copy_entry = malloc(sizeof(entry));
+        copy_entry->values = malloc(sizeof(int) * length);
+        copy_entry->next = NULL;
+        copy_entry->prev = NULL;
+        strcpy(copy_entry->key, live_entries->key);
+        for (int i = 0; i < length; i++) {
+            copy_entry->values[i] = live_entries->values[i];
+        }
+        copy_entry->length = length;
 
-    while (curr != NULL && found == NULL) {
-        int result = strcmp(curr->key, key);
-        if (result == 0) {
-            found = curr;
-            return found;
+        if (snap_entry_head == NULL) {
+            snap_entry_head = copy_entry;
+            snap_entry_tail = copy_entry;
+        } else {
+            snap_entry_tail->next = copy_entry;
+            copy_entry->prev = snap_entry_tail;
+            snap_entry_tail = copy_entry;
         }
-        curr = curr->next;
-    }
-    if (found == NULL) {
-        found = malloc(sizeof(entry));
-        strcpy(found->key, key);
-        found->prev = NULL;
-        found->next = NULL;
 
-        entry *temp = current_snapshot->entries;
-        found->next = temp;
-        if (temp==NULL){
-            entry_head = found;
-        }
-        if (temp != NULL) {
-            temp->prev = found;
-            entry_tail = found;
-        }
-        current_snapshot->entries = found;
+        live_entries = live_entries->next;
     }
-    return found;
+    return snap_entry_head;
 }
 
-void command_bye(snapshot *current_snapshot) {
+void static free_entries(entry *free_entry) {
+    entry *temp = free_entry;
+    if (temp == NULL) {
+        return; //If head is null, no need to free memory
+    }
+    if (temp->next == NULL) {
+        free_values(temp); //If there is no next, then free the node
+        free(temp);
+    } else {
+        temp = temp->next;
+        while (temp->next != NULL) {
+            free_values(temp->prev); //Otherwise, free the node and values before it, and move to next node
+            free(temp->prev);
+            temp = temp->next;
+        }
+        free_values(temp);
+        free(temp->key);
+    }
+}
+
+void command_bye() {
     printf("bye\n");
-    entry *temp = current_snapshot->entries;
+    entry *temp = entry_head;
+    //TODO: put this section in a seperate method for snapshot easyness
     if (entry_head == NULL) {
         exit(0); //If head is null, no need to free memory
     }
+    //TODO: Use Delete Method??
     if (temp->next == NULL) {
         free(temp->values); //If there is no next, then free the node
         free(temp);
     } else {
         temp = temp->next;
-        while (temp != NULL) {
+        while (temp->next != NULL) {
             free_values(temp->prev); //Otherwise, free the node and values before it, and move to next node
             free(temp->prev);
             temp = temp->next;
         }
-        free(current_snapshot);
+        free_values(temp);
+        free(temp->key);
     }
     exit(0);
 }
@@ -146,11 +168,10 @@ void command_help() {
 /*
  * The Method that displays a list of keys, the list of keys is from newest to oldest
  */
-void command_listkeys(snapshot *current_snapshot) {
-    entry *temp = current_snapshot->entries;
+void command_listkeys() {
+    entry *temp = entry_head;
     if (temp == NULL) {
         printf("no keys\n");
-        printf("\n");
     } else {
         while (temp != NULL) {
             printf("%s\n", temp->key);
@@ -164,8 +185,8 @@ void command_listkeys(snapshot *current_snapshot) {
  * The Method that displays a list of keys and the values with the keys,
  * the list of keys and values is from newest to oldest
  */
-void command_listentries(snapshot *current_snapshot) {
-    entry *temp = current_snapshot->entries;
+void command_listentries() {
+    entry *temp = entry_head;
     if (temp == NULL) {
         printf("no entries\n");
         printf("\n");
@@ -190,7 +211,7 @@ void command_listentries(snapshot *current_snapshot) {
 /*
  * The Method that displays a list of all the available snapshots from newest to oldest.
  */
-void command_listsnapshots(snapshot *current_snapshot) {
+void command_listsnapshots() {
     if (snapshot_head == NULL) {
         printf("no snapshots\n");
         printf("\n");
@@ -211,190 +232,220 @@ void command_listsnapshots(snapshot *current_snapshot) {
 /*
  * Method that gets the values for a given key.
  */
-void command_get(snapshot *current_snapshot, char **cmd) {
-    entry *key = find_key(current_snapshot, cmd[1]);
+void command_get(char **cmd) {
+    entry *key = find_key(cmd[1]);
     if (key == NULL) {
-        printf("no key\n");
-        printf("\n");
+        printf("no such key\n\n");
         return;
     }
-    int *values = key->values;
+    int len = key->length;
+    int values[len];
+    for (int i = 0; i < len; i++) {
+        values[i] = key->values[i];
+    }
     printf("[");
-    for (int i = 0; i < key->length; i++) {
+    for (int i = 0; i < len; i++) {
         printf("%d", values[i]);
-        if (i < key->length - 1) {
+        if (i < len - 1) {
             printf(" ");
         }
     }
-    printf("]\n");
-    printf("\n");
+    printf("]\n\n");
 
 }
 
 /*
  * Method handles the del command when the user wants to delete the key.
  */
-void command_del(snapshot *current_snapshot, char **cmd) {
-    entry *key = find_key(current_snapshot, cmd[1]);
-    if (key == NULL) {
-        printf("no such key");
-        printf("\n");
+void command_del(char **cmd) {
+    entry *del_val = find_key(cmd[1]);
+    if (del_val == NULL) {
+        printf("no such key\n\n");
         return;
     }
-    free_values(key);
-    entry *prev = key->prev;
-    entry *next = key->next;
-    if (next != NULL) {
+    entry *prev = del_val->prev;
+    entry *next = del_val->next;
+    if (prev == NULL) {
+        entry_head = next;
+    } else if (next == NULL) {
+        entry_tail = prev;
+    } else {
+        prev->next = next;
         next->prev = prev;
     }
-    if (prev != NULL) {
-        prev->next = next;
-    }
-
-    if (current_snapshot->entries == key) {
-        current_snapshot->entries = key->next;
-    }
-    free(key);
-    printf("ok\n");
-    printf("\n");
+    free_values(del_val);
+    free(del_val);
+    printf("ok\n\n");
 }
 
-void command_purge() {
-    printf("ok\n");
+void command_purge(char **cmd) {
+//    entry * current = find_key(current_snapshot,cmd[1]);
+//    if (current == NULL) {
+//        printf("no such key\n\n");
+//        return;
+//    }
+//    command_del(current_snapshot,cmd);
+    printf("ok\n\n");
 }
 
 /*
  * Method handles the set command when the user wants to set values to a key, the key can either
  * pre-exist or be brand new.
  */
-void command_set(snapshot *current_snapshot, int cmd_counter, char **cmd) {
+void command_set(int cmd_counter, char **cmd) {
+    //TODO: MEMORY LEAK
+    char *key = cmd[1];
+    entry *found = find_key(key);
 
-    entry *new_entry = make_or_find_key(current_snapshot, cmd[1]);
-    if(entry_head!=NULL) {
-        free_values(new_entry);
-    }
-    new_entry->values = (int *) malloc((cmd_counter - 2) * sizeof(int));
-    for (int i = 2; i < cmd_counter; i++) {
-        new_entry->values[i - 2] = atoi(cmd[i]);
-    }
-    new_entry->length = cmd_counter - 2;
+    if (found == NULL) {
+        char *key = cmd[1];
+        entry *new_entry = malloc(sizeof(entry));
+        new_entry->next = NULL;
+        new_entry->prev = NULL;
+        strcpy(new_entry->key, key);
+        int length = cmd_counter - 2;
+        new_entry->values = malloc(sizeof(int) * length);
+        for (int i = 0; i < length; i++) {
+            new_entry->values[i] = atoi(cmd[i + 2]);
+        }
+        new_entry->length = length;
 
-    printf("ok\n");
-    printf("\n");
+        if (entry_head == NULL) {
+            entry_head = new_entry;
+            entry_tail = new_entry;
+        } else {
+            entry_tail->next = new_entry;
+            new_entry->prev = entry_tail;
+            entry_tail = new_entry;
+        }
+    }
+    if (found != NULL) {
+        free_values(found);
+        int length = cmd_counter - 2;
+        found->values = malloc(sizeof(int) * length);
+        for (int i = 0; i < length; i++) {
+            found->values[i] = atoi(cmd[i + 2]);
+        }
+    }
+    printf("ok\n\n");
 }
 
 /*
  * Method handles the user push(adding to the front), the assumption is that there is a entry in the linked list.
  * the values are pushed or added to the start of the values for the entry.
  */
-void command_push(snapshot *current_snapshot, int cmd_counter, char **cmd) {
-    entry *current_entry = find_key(current_snapshot, cmd[1]);
+void command_push(int cmd_counter, char **cmd) {
+    entry *current_entry = find_key(cmd[1]);
     if (current_entry == NULL) {
-        printf("no such key\n");
-        printf("\n");
+        printf("no such key\n\n");
         return;
     }
     int old_len = current_entry->length;
     int new_len = cmd_counter - 2;
     int total_len = new_len + old_len;
-    int current_value[current_entry->length];
+    int current_value[old_len];
     int holding_array[new_len];
 
-    for (int i = 0; i < current_entry->length; i++) {
+    for (int i = 0; i < old_len; i++) {
         current_value[i] = current_entry->values[i];
     }
-    current_entry->values = realloc(current_entry->values, sizeof(int) * total_len);
-
-    for (int x = 0; x < new_len; x++) {
-        holding_array[(new_len - 1) - x] = atoi(cmd[x + 2]);
+    printf("\n");
+    for (int i = 0; i < new_len; i++) {
+        holding_array[i] = atoi(cmd[i + 2]);
     }
-    for (int z = 0; z < (old_len + new_len); z++) {
-        current_entry->values[z] = holding_array[z];
+    int backwards[new_len];
+    int reverse_index = new_len - 1;
+    for (int i = 0; i < new_len; i++) {
+        backwards[i] = holding_array[reverse_index - i];
     }
-    for (int z = 0; z < (old_len + new_len); z++) {
-        current_entry->values[old_len + z] = current_value[z];
+    free_values(current_entry);
+    current_entry->values = malloc(sizeof(int) * total_len);
+    for (int j = 0; j < old_len; j++) {
+        current_entry->values[j] = backwards[j];
     }
-
+    for (int z = 0; z < new_len; z++) {
+        current_entry->values[old_len + z] = holding_array[z];
+    }
 
     current_entry->length = total_len;
 
-    printf("ok\n");
-    printf("\n");
+    printf("ok\n\n");
 }
 
 /*
  * Method handles the user appending(adding to the end), the assumption is that there is a entry in the linked list.
  * the values are appended or added to the end of the values for the entry.
  */
-void command_append(snapshot *current_snapshot, int cmd_counter, char **cmd) {
-    entry *current_entry = find_key(current_snapshot, cmd[1]);
+void command_append(int cmd_counter, char **cmd) {
+    entry *current_entry = find_key(cmd[1]);
     if (current_entry == NULL) {
-        printf("no such key\n");
-        printf("\n");
+        printf("no such key\n\n");
         return;
     }
     int old_len = current_entry->length;
     int new_len = cmd_counter - 2;
     int total_len = new_len + old_len;
-    int current_value[current_entry->length];
+    int current_value[old_len];
     int holding_array[new_len];
 
-    for (int i = 0; i < current_entry->length; i++) {
+    for (int i = 0; i < old_len; i++) {
         current_value[i] = current_entry->values[i];
     }
     current_entry->values = realloc(current_entry->values, sizeof(int) * total_len);
     for (int j = 0; j < old_len; j++) {
         current_entry->values[j] = current_value[j];
     }
+    printf("\n");
     for (int x = 0; x < new_len; x++) {
         holding_array[x] = atoi(cmd[x + 2]);
     }
-
-    for (int z = 0; z < (old_len + new_len); z++) {
+    for (int z = 0; z < new_len; z++) {
         current_entry->values[old_len + z] = holding_array[z];
     }
     current_entry->length = total_len;
 
-    printf("ok\n");
-    printf("\n");
+    printf("ok\n\n");
 }
 
 /*
  * This method handles the picking of a specific value and displays it.
  */
-void command_pick(snapshot *current_snapshot, char **cmd) {
-    entry *current_entry = find_key(current_snapshot, cmd[1]);
+void command_pick(char **cmd) {
+    entry *current_entry = find_key(cmd[1]);
     if (current_entry == NULL) {
-        printf("no such key\n");
-        printf("\n");
+        printf("no such key\n\n");
+        return;
+    }
+    if (current_entry->length == 0) {
+        printf("nil\n\n");
         return;
     }
     int index = atoi(cmd[2]) - 1;
     if (index < 0 || index >= current_entry->length) {
-        printf("index out of range\n");
-        printf("\n");
+        printf("index out of range\n\n");
         return;
     }
     int value = current_entry->values[index];
-    printf("%d\n", value);
-    printf("\n");
+    printf("%d\n\n", value);
 }
 
 /*
  * Method handles Pluck command, which find the index in the array of values, deletes the value
  * and displays it.
  */
-void command_pluck(snapshot *current_snapshot, char **cmd) {
-    entry *current_entry = find_key(current_snapshot, cmd[1]);
+void command_pluck(char **cmd) {
+    entry *current_entry = find_key(cmd[1]);
     if (current_entry == NULL) {
-        printf("no such key\n");
-        printf("\n");
+        printf("no such key\n\n");
+        return;
+    }
+    if (current_entry->length == 0) {
+        printf("nil\n\n");
         return;
     }
     int index = atoi(cmd[2]) - 1;
     if (index < 0 || index >= current_entry->length) {
-        printf("index out of range\n");
-        printf("\n");
+        printf("index out of range\n\n");
         return;
     }
     int value = current_entry->values[index];
@@ -404,14 +455,14 @@ void command_pluck(snapshot *current_snapshot, char **cmd) {
         holding_array[i] = current_entry->values[i];
     }
 
-    free_values(current_entry);
     current_entry->length = current_entry->length - 1;
-    current_entry->values = malloc(sizeof(int)*current_entry->length);
-    for(int z = 0 ;z<index;z++){
+    free_values(current_entry);
+    current_entry->values = malloc(sizeof(int) * current_entry->length);
+    for (int z = 0; z < index; z++) {
         current_entry->values[z] = holding_array[z];
     }
-    for(int z = index;z<current_entry->length;z++){
-        current_entry->values[z] = holding_array[z+1];
+    for (int z = index; z < current_entry->length; z++) {
+        current_entry->values[z] = holding_array[z + 1];
     }
 
     printf("\n");
@@ -421,30 +472,36 @@ void command_pluck(snapshot *current_snapshot, char **cmd) {
  * Method handles Pop command, which gets the first index in the array of values, deletes the value
  * and displays it.
  */
-void command_pop(snapshot *current_snapshot, char **cmd) {
-    entry *current_entry = find_key(current_snapshot, cmd[1]);
+void command_pop(char **cmd) {
+    entry *current_entry = find_key(cmd[1]);
     if (current_entry == NULL) {
-        printf("no such key\n");
-        printf("\n");
+        printf("no such key\n\n");
         return;
     }
-    if (current_entry->length==0) {
-        printf("nil\n");
-        printf("\n");
+    if (current_entry->length == 0) {
+        printf("nil\n\n");
         return;
     }
-    int value = current_entry->values[0];
+    int index = 0;
+    if (index < 0 || index >= current_entry->length) {
+        printf("index out of range\n\n");
+        return;
+    }
+    int value = current_entry->values[index];
     printf("%d\n", value);
-    int holding_array[current_entry->length-1];
+    int holding_array[current_entry->length];
     for (int i = 0; i < current_entry->length; i++) {
-        holding_array[i] = current_entry->values[i+1];
+        holding_array[i] = current_entry->values[i];
     }
 
-    free_values(current_entry);
     current_entry->length = current_entry->length - 1;
-    current_entry->values = malloc(sizeof(int)*current_entry->length);
-    for(int z = 0 ;z<current_entry->length;z++){
+    free_values(current_entry);
+    current_entry->values = malloc(sizeof(int) * current_entry->length);
+    for (int z = 0; z < index; z++) {
         current_entry->values[z] = holding_array[z];
+    }
+    for (int z = index; z < current_entry->length; z++) {
+        current_entry->values[z] = holding_array[z + 1];
     }
 
     printf("\n");
@@ -455,6 +512,8 @@ void command_drop() {
 }
 
 void command_rollback() {
+    
+
     printf("ok");
 }
 
@@ -463,17 +522,31 @@ void command_checkout() {
 }
 
 void command_snapshot() {
+    snapshot *new_snap = malloc(sizeof(snapshot));
+    new_snap->next = NULL;
+    new_snap->prev = NULL;
+    new_snap->id = snapshot_id;
+    new_snap->entries = populate_snapshot();
 
+    if (snapshot_head == NULL) {
+        snapshot_head = new_snap;
+        snapshot_tail = new_snap;
+    } else {
+        snapshot_tail->next = new_snap;
+        new_snap->prev = snapshot_tail;
+        snapshot_tail = new_snap;
+    }
+    printf("saved as snapshot %d\n\n", snapshot_id);
+    snapshot_id++;
 }
 
 /*
  * Gets the Min value within the key.
  */
-void command_min(snapshot *current_snapshot, char **cmd) {
-    entry *current_entry = find_key(current_snapshot, cmd[1]);
+void command_min(char **cmd) {
+    entry *current_entry = find_key(cmd[1]);
     if (current_entry == NULL) {
-        printf("no such key\n");
-        printf("\n");
+        printf("no such key\n\n");
         return;
     }
     int min = current_entry->values[0];
@@ -482,18 +555,16 @@ void command_min(snapshot *current_snapshot, char **cmd) {
             min = current_entry->values[i];
         }
     }
-    printf("%d\n", min);
-    printf("\n");
+    printf("%d\n\n", min);
 }
 
 /*
  * Gets the Max value within the key.
  */
-void command_max(snapshot *current_snapshot, char **cmd) {
-    entry *current_entry = find_key(current_snapshot, cmd[1]);
+void command_max(char **cmd) {
+    entry *current_entry = find_key(cmd[1]);
     if (current_entry == NULL) {
-        printf("no such key\n");
-        printf("\n");
+        printf("no such key\n\n");
         return;
     }
     int max = current_entry->values[0];
@@ -502,50 +573,45 @@ void command_max(snapshot *current_snapshot, char **cmd) {
             max = current_entry->values[i];
         }
     }
-    printf("%d\n", max);
-    printf("\n");
+    printf("%d\n\n", max);
 }
 
 /*
  * Gets the sum of all the value within the key.
  */
-void command_sum(snapshot *current_snapshot, char **cmd) {
-    entry *current_entry = find_key(current_snapshot, cmd[1]);
+void command_sum(char **cmd) {
+    entry *current_entry = find_key(cmd[1]);
     if (current_entry == NULL) {
-        printf("no such key");
+        printf("no such key\n\n");
         return;
     }
     int sum = 0;
     for (int i = 0; i < current_entry->length; i++) {
         sum += current_entry->values[i];
     }
-    printf("%d\n", sum);
-    printf("\n");
+    printf("%d\n\n", sum);
 }
 
 /*
  * Gets the length value within the key.
  */
-void command_len(snapshot *current_snapshot, char **cmd) {
-    entry *current_entry = find_key(current_snapshot, cmd[1]);
+void command_len(char **cmd) {
+    entry *current_entry = find_key(cmd[1]);
     if (current_entry == NULL) {
-        printf("no such key\n");
-        printf("\n");
+        printf("no such key\n\n");
         return;
     }
     int length = current_entry->length;
-    printf("%d\n", length);
-    printf("\n");
+    printf("%d\n\n", length);
 }
 
 /*
  * Method Reverses the values within the key. Still Work in Progress
  */
-void command_rev(snapshot *current_snapshot, char **cmd) {
-    entry *current_entry = find_key(current_snapshot, cmd[1]);
+void command_rev(char **cmd) {
+    entry *current_entry = find_key(cmd[1]);
     if (current_entry == NULL) {
-        printf("no such key\n");
-        printf("\n");
+        printf("no such key\n\n");
         return;
     }
     int length = current_entry->length;
@@ -561,34 +627,59 @@ void command_rev(snapshot *current_snapshot, char **cmd) {
     for (int i = 0; i < length; i++) {
         current_entry->values[i] = backwards[i];
     }
-    printf("ok\n");
-    printf("\n");
+    printf("ok\n\n");
 }
 
 void command_uniq(snapshot *current_snapshot, char **cmd) {
 //    entry *current_entry = find_key(current_snapshot, cmd[1]);
 //    if (current_entry == NULL) {
-//        printf("no such key\n");
-//        printf("\n");
+//        printf("no such key\n\n");
 //        return;
 //    }
 //    int length = current_entry->length;
-//    int holding_array[length];
+//    int *holding_array;
 //    for (int i = 0; i < length; i++) {
 //        holding_array[i] = current_entry->values[i];
 //    }
 //    int repeat = 0;
-//    for(int i = 0;i<length;i++){
-//        if(i!=length-1){
-//
+//    int j = 0;
+//    while (j < length) {
+//        int i = j;
+//        for (; i < length; i++) {
+//            if (holding_array[i] == holding_array[i]) {
+//                repeat++;
+//            }
+//            if (holding_array[i] != holding_array[i]) {
+//                break;
+//            }
 //        }
+//        if (repeat > 0) {
+//            for (int z = 0; z < (j + 1); z++) {
+//                holding_array[z] = holding_array[z];
+//            }
+//            for (int z = (j + 1); z < (length - repeat); z++) {
+//                holding_array[z] = holding_array[z + i];
+//            }
+//        }
+//        repeat = 0;
+//        j++;
 //    }
-    printf("ok\n");
+
+    printf("ok\n\n");
 }
 
-void command_sort(snapshot *current_snapshot, char **cmd) {
-    //use qSort()
-    printf("ok\n");
+int comparison(const void *larger, const void *smaller) {
+    return (*(int *) larger - *(int *) smaller);
+}
+
+void command_sort(char **cmd) {
+    entry *current_entry = find_key(cmd[1]);
+    if (current_entry == NULL) {
+        printf("no such key\n\n");
+        return;
+    }
+    qsort(current_entry->values, current_entry->length, sizeof(current_entry->values[0]), comparison);
+    printf("ok\n\n");
 }
 
 void command_diff() {
@@ -606,7 +697,7 @@ void command_union() {
 /*
  * Method that handles comparison of the command and to figure out what the user is inputing
  */
-void command_compare(snapshot *current_snapshot, int cmd_counter, char **cmd) {
+void command_compare(int cmd_counter, char **cmd) {
     int i = 0;
     int index_one;
     int index_two;
@@ -632,7 +723,7 @@ void command_compare(snapshot *current_snapshot, int cmd_counter, char **cmd) {
 
     if (cmd[1] != NULL && index_one == 25) {
         int j = 0;
-        char *second_cmd[3] = {"KEYS", "ENTRIES", "SNAPSHOT"};
+        char *second_cmd[3] = {"KEYS", "ENTRIES", "SNAPSHOTS"};
         size = (sizeof(second_cmd) / sizeof(second_cmd[0]));
         while (j < size) {
             int result = strcasecmp(cmd[1], second_cmd[j]);
@@ -655,35 +746,27 @@ void command_compare(snapshot *current_snapshot, int cmd_counter, char **cmd) {
      * predefined indexes of the command array.
      */
     if (index_one == 0) {
-        command_bye(current_snapshot);
-    } else if (index_one == 1) {//TODO: done
-        if (size2 < 2) {
-            command_help();
-        }
-    } else if (index_one == 2) {//TODO: done
-        command_get(current_snapshot, cmd);
-    } else if (index_one == 3) {//TODO: done
-        command_del(current_snapshot, cmd);
+        command_bye();
+    } else if (index_one == 1 && cmd[0] != NULL) {//done
+        command_help();
+    } else if (index_one == 2 && cmd[1] != NULL && size2 < 2) {//done
+        command_get(cmd);
+    } else if (index_one == 3 && cmd[1] != NULL && size2 < 2) {//done
+        command_del(cmd);
     } else if (index_one == 4) {
 
-    } else if (index_one == 5) {//TODO: done
-        command_set(current_snapshot, cmd_counter, cmd);
-    } else if (index_one == 6) {//TODO: done
-        command_push(current_snapshot, cmd_counter, cmd);
-    } else if (index_one == 7) {//TODO: done
-        command_append(current_snapshot, cmd_counter, cmd);
-    } else if (index_one == 8) {//TODO: done
-        if (size2 < 3) {
-            command_pick(current_snapshot, cmd);
-        }
-    } else if (index_one == 9) {//TODO: done
-        if (size2 < 3) {
-            command_pluck(current_snapshot, cmd);
-        }
-    } else if (index_one == 10) {//TODO: done
-        if (size2 < 2) {
-            command_pop(current_snapshot, cmd);
-        }
+    } else if (index_one == 5 && cmd[1] != NULL) {//done
+        command_set(cmd_counter, cmd);
+    } else if (index_one == 6 && cmd[1] != NULL) {//done
+        command_push(cmd_counter, cmd);
+    } else if (index_one == 7 && cmd[1] != NULL) {//done
+        command_append(cmd_counter, cmd);
+    } else if (index_one == 8 && cmd[1] != NULL && size2 < 3) {//done
+        command_pick(cmd);
+    } else if (index_one == 9 && cmd[1] != NULL && size2 < 3) {//done
+        command_pluck(cmd);
+    } else if (index_one == 10 && cmd[1] != NULL && size2 < 2) {//done
+        command_pop(cmd);
     } else if (index_one == 11) {
 
     } else if (index_one == 12) {
@@ -691,31 +774,21 @@ void command_compare(snapshot *current_snapshot, int cmd_counter, char **cmd) {
     } else if (index_one == 13) {
 
     } else if (index_one == 14) {
-
-    } else if (index_one == 15) {//TODO: done
-        if (size2 < 2) {
-            command_min(current_snapshot, cmd);
-        }
-    } else if (index_one == 16) {//TODO: done
-        if (size2 < 2) {
-            command_max(current_snapshot, cmd);
-        }
-    } else if (index_one == 17) {//TODO: done
-        if (size2 < 2) {
-            command_sum(current_snapshot, cmd);
-        }
-    } else if (index_one == 18) {//TODO: done
-        if (size2 < 2) {
-            command_len(current_snapshot, cmd);
-        }
-    } else if (index_one == 19) {//TODO: done
-        if (size2 < 2) {
-            command_rev(current_snapshot, cmd);
-        }
-    } else if (index_one == 20) {
-
-    } else if (index_one == 21) {
-
+        command_snapshot();
+    } else if (index_one == 15 && cmd[1] != NULL && size2 < 2) {//done
+        command_min(cmd);
+    } else if (index_one == 16 && cmd[1] != NULL && size2 < 2) {//done
+        command_max(cmd);
+    } else if (index_one == 17 && cmd[1] != NULL && size2 < 2) {//done
+        command_sum(cmd);
+    } else if (index_one == 18 && cmd[1] != NULL && size2 < 2) {//done
+        command_len(cmd);
+    } else if (index_one == 19 && cmd[1] != NULL && size2 < 2) {//done
+        command_rev(cmd);
+    } else if (index_one == 20 && cmd[1] != NULL && size2 < 2) {
+//        command_uniq(current_snapshot, cmd);
+    } else if (index_one == 21 && cmd[1] != NULL && size2 < 2) {//done
+        command_sort(cmd);
     } else if (index_one == 22) {
 
     } else if (index_one == 23) {
@@ -723,9 +796,9 @@ void command_compare(snapshot *current_snapshot, int cmd_counter, char **cmd) {
     } else if (index_one == 24) {
 
     } else if (index_one == 25 && (index_two == 0 || index_two == 1 || index_two == 2)) {
-        if (index_two == 0) command_listkeys(current_snapshot);//TODO: done
-        if (index_two == 1) command_listentries(current_snapshot);//TODO: done
-        if (index_two == 2) command_listsnapshots(current_snapshot);
+        if (index_two == 0) command_listkeys();//done
+        if (index_two == 1) command_listentries();//done
+        if (index_two == 2) command_listsnapshots();
         else return;
     } else {
         return;
@@ -737,30 +810,25 @@ void command_compare(snapshot *current_snapshot, int cmd_counter, char **cmd) {
  */
 int main(void) {
     char line[MAX_LINE];
-    snapshot *current_snap = malloc(sizeof(snapshot));
-    current_snap->entries = NULL;
-    current_snap->next = NULL;
-    current_snap->prev = NULL;
-
     while (true) {
         printf("> ");
         if (fgets(line, MAX_LINE, stdin) == NULL) {
-            command_bye(current_snap);
+            command_bye();
             return 0;
         }
 
         char *cmd[MAX_COMMAND];
         int i = 0;
-        strtok(line, "\n");
-        cmd[i] = strtok(line, " ");
+        char *new_line = strtok(line, "\n");
+        cmd[i] = strtok(new_line, " ");
 
         while (cmd[i] != NULL) {
             i++;
             cmd[i] = strtok(NULL, " ");
+
         }
         int cmd_counter = i;
-        command_compare(current_snap, cmd_counter, cmd);
+        command_compare(cmd_counter, cmd);
     }
-    free(current_snap);
     return EXIT_SUCCESS;
 }
