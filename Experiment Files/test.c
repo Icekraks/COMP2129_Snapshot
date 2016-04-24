@@ -2,34 +2,31 @@
 #include <string.h>
 #include <stdlib.h>
 int main(){
-	char *commands[3] = {
-"KEYS", "ENTRIES", "SNAPSHOT"
-
-	};
-	int numbers[5] = {1,2,3,4,5};
-	int test_array[3]={1, 2, 3};
-	int number = sizeof(test_array);
-	int number_div = number/sizeof(test_array[0]);
-	printf("%d %d\n",number,number_div);
-	int size = sizeof(commands);
-	int z = sizeof(commands);
-	int f = sizeof(commands[0]);
-	int size2 = z/f;
-	printf("%d %d\n",size,size2);
-	char *test ="keys";
-	int x,y;
-  x = strcmp(commands[0],test);
-	y = strcasecmp(commands[0],test);
-	for(int i = 0;i<5;i++){
-				printf("%d\n",numbers[i]);
+	int values[14] = {1,2,3,4,3,4,5,6,6,7,6,6,6,6};
+	int len = 14;
+	int new_len = 14;
+	int num_duplicates = 1;
+	int update_values[len];
+	for(int i = 0;i<len;i++){
+		printf("%d ",values[i]);
+	}
+	printf("\n");
+	update_values[0] = values[0];
+	for (int j = 1; j < len; j++) {
+		if (values[j] == update_values[num_duplicates-1]) {
+			new_len--;
+			continue;
 		}
-	int backwards[5];
-	for(int i = 0;i<5;i++){
-        backwards[i]=numbers[4-i];
-    }
-		for(int i = 0;i<5;i++){
-	        printf("%d\n",backwards[i]);
-	    }
+		else {
+			update_values[num_duplicates] = values[j];
+			num_duplicates++;
+		}
+	}
 
-	printf("%d %d",x,y);
+
+	//Print Statement
+	for(int i = 0;i<new_len;i++){
+		printf("%d ",update_values[i]);
+	}
+
 }

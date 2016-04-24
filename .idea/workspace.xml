@@ -12,12 +12,17 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="bcdbe457-dacf-44d7-9511-7e946e248b5b" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/Tests/Ed_test2.in" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/Tests/Ed_test2.out" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/Tests/set1_Ed_test.in" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/Tests/Ed_test_del.in" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/Tests/Ed_test_del.out" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/Tests/Ed_test_purgestuff.in" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/Tests/Ed_test_purgestuff.out" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/Tests/Ed_test_push.in" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/Tests/Ed_test_push.out" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/snapshot" afterPath="$PROJECT_DIR$/snapshot" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/snapshot.dSYM/Contents/Resources/DWARF/snapshot" afterPath="$PROJECT_DIR$/snapshot.dSYM/Contents/Resources/DWARF/snapshot" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/a.out" afterPath="$PROJECT_DIR$/a.out" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/a.out.dSYM/Contents/Resources/DWARF/a.out" afterPath="$PROJECT_DIR$/a.out.dSYM/Contents/Resources/DWARF/a.out" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Experiment Files/a.out" afterPath="$PROJECT_DIR$/Experiment Files/a.out" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Experiment Files/test.c" afterPath="$PROJECT_DIR$/Experiment Files/test.c" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/snapshot.c" afterPath="$PROJECT_DIR$/snapshot.c" />
     </list>
     <ignored path="COMP2129_Assignment2.iws" />
@@ -62,8 +67,8 @@
       <file leaf-file-name="snapshot.c" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/snapshot.c">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="349">
-              <caret line="514" column="4" selection-start-line="514" selection-start-column="4" selection-end-line="514" selection-end-column="4" />
+            <state relative-caret-position="6983">
+              <caret line="616" column="0" selection-start-line="616" selection-start-column="0" selection-end-line="617" selection-end-column="52" />
               <folding>
                 <element signature="e#64#82#0" expanded="true" />
               </folding>
@@ -71,31 +76,51 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Ed_test2.in" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Tests/Ed_test2.in">
+      <file leaf-file-name="Ed_test_purgestuff.in" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/Tests/Ed_test_purgestuff.in">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="0">
-              <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+            <state relative-caret-position="225">
+              <caret line="15" column="0" selection-start-line="15" selection-start-column="0" selection-end-line="15" selection-end-column="0" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Ed_test2.out" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Tests/Ed_test2.out">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="0">
-              <caret line="0" column="2" selection-start-line="0" selection-start-column="2" selection-end-line="0" selection-end-column="2" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="set1_Ed_test.in" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Tests/set1_Ed_test.in">
+      <file leaf-file-name="Ed_test_push.in" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/Tests/Ed_test_push.in">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="105">
-              <caret line="7" column="5" selection-start-line="7" selection-start-column="5" selection-end-line="7" selection-end-column="5" />
+              <caret line="7" column="0" selection-start-line="7" selection-start-column="0" selection-end-line="7" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Ed_test_push.out" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/Tests/Ed_test_push.out">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="0">
+              <caret line="0" column="11" selection-start-line="0" selection-start-column="11" selection-end-line="0" selection-end-column="11" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Ed_test_del.in" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/Tests/Ed_test_del.in">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="0">
+              <caret line="0" column="5" selection-start-line="0" selection-start-column="5" selection-end-line="0" selection-end-column="5" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Ed_test_del.out" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/Tests/Ed_test_del.out">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="420">
+              <caret line="28" column="2" selection-start-line="28" selection-start-column="2" selection-end-line="28" selection-end-column="2" />
               <folding />
             </state>
           </provider>
@@ -113,6 +138,12 @@
         <option value="$PROJECT_DIR$/Tests/set1_Ed_test.in" />
         <option value="$PROJECT_DIR$/Tests/Ed_test2.out" />
         <option value="$PROJECT_DIR$/Tests/Ed_test2.in" />
+        <option value="$PROJECT_DIR$/Tests/Ed_test_del.out" />
+        <option value="$PROJECT_DIR$/Tests/Ed_test_del.in" />
+        <option value="$PROJECT_DIR$/Tests/Ed_test_push.out" />
+        <option value="$PROJECT_DIR$/Tests/Ed_test_push.in" />
+        <option value="$PROJECT_DIR$/Tests/Ed_test_purgestuff.in" />
+        <option value="$PROJECT_DIR$/Tests/Ed_test_purgestuff.out" />
         <option value="$PROJECT_DIR$/snapshot.c" />
       </list>
     </option>
@@ -421,7 +452,7 @@
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <option name="time" value="7" />
+      <option name="time" value="8" />
     </breakpoint-manager>
     <watches-manager />
   </component>
@@ -563,10 +594,34 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/snapshot.h">
+    <entry file="file://$PROJECT_DIR$/Tests/set1_Ed_test.in">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="113">
-          <caret line="15" column="14" selection-start-line="15" selection-start-column="14" selection-end-line="15" selection-end-column="14" />
+        <state relative-caret-position="105">
+          <caret line="7" column="5" selection-start-line="7" selection-start-column="5" selection-end-line="7" selection-end-column="5" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Tests/basic_functionality_4.in">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Tests/basic_functionality_3.in">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Tests/basic_functionality_1.in">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding />
         </state>
       </provider>
@@ -579,14 +634,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Tests/set1_Ed_test.in">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="105">
-          <caret line="7" column="5" selection-start-line="7" selection-start-column="5" selection-end-line="7" selection-end-column="5" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/Tests/Ed_test2.in">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
@@ -595,10 +642,90 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/Tests/basic_functionality_2.out">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Tests/basic_functionality_2.in">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Tests/Ed_test_del.out">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="420">
+          <caret line="28" column="2" selection-start-line="28" selection-start-column="2" selection-end-line="28" selection-end-column="2" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Tests/Ed_test_del.in">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="5" selection-start-line="0" selection-start-column="5" selection-end-line="0" selection-end-column="5" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Tests/Ed_test_push.out">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="11" selection-start-line="0" selection-start-column="11" selection-end-line="0" selection-end-column="11" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Tests/Ed_test_push.in">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="105">
+          <caret line="7" column="0" selection-start-line="7" selection-start-column="0" selection-end-line="7" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Tests/basic_functionality_4.out">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Tests/Ed_test_purgestuff.out">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Tests/Ed_test_purgestuff.in">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="225">
+          <caret line="15" column="0" selection-start-line="15" selection-start-column="0" selection-end-line="15" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/snapshot.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="113">
+          <caret line="15" column="14" selection-start-line="15" selection-start-column="14" selection-end-line="15" selection-end-column="14" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/snapshot.c">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="349">
-          <caret line="514" column="4" selection-start-line="514" selection-start-column="4" selection-end-line="514" selection-end-column="4" />
+        <state relative-caret-position="6983">
+          <caret line="616" column="0" selection-start-line="616" selection-start-column="0" selection-end-line="617" selection-end-column="52" />
           <folding>
             <element signature="e#64#82#0" expanded="true" />
           </folding>
