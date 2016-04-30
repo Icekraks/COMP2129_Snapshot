@@ -32,6 +32,8 @@ snapshot *snapshot_tail = NULL;
 // ...
 //
 
+#define debug1 0
+
 const char *commands[26] = {
         "BYE",      //0
         "HELP",     //1
@@ -68,7 +70,6 @@ int snapshot_id = 1;
 
 void static free_values(entry *key) {
     free(key->values);
-    key->values = NULL;
 }
 
 static entry *find_key(entry *source, char *key) {
@@ -100,11 +101,11 @@ static snapshot *find_snapshot(int id) {
     return NULL;
 }
 
-static entry *populate_snapshot(entry *source) {
+entry *populate_snapshot(entry *source) {
     entry *source_entries = source;
     entry *local_entry_head = NULL;
     entry *local_entry_tail = NULL;
-    while (source_entries->next != NULL) {
+    while (source_entries != NULL) {
         int length = source_entries->length;
         entry *copy_entry = malloc(sizeof(entry));
         copy_entry->values = malloc(sizeof(int) * length);
@@ -130,27 +131,50 @@ static entry *populate_snapshot(entry *source) {
     return local_entry_head;
 }
 
+void static populate_entry_head(entry * source) {
+    entry *source_entries = source;
+    entry *local_entry_head = NULL;
+    entry *local_entry_tail = NULL;
+    while (source_entries != NULL) {
+        int length = source_entries->length;
+        entry *copy_entry = malloc(sizeof(entry));
+        copy_entry->values = malloc(sizeof(int) * length);
+        copy_entry->next = NULL;
+        copy_entry->prev = NULL;
+        strcpy(copy_entry->key, source_entries->key);
+        for (int i = 0; i < length; i++) {
+            copy_entry->values[i] = source_entries->values[i];
+        }
+        copy_entry->length = length;
+
+        if (local_entry_head == NULL) {
+            local_entry_head = copy_entry;
+            local_entry_tail = copy_entry;
+        } else {
+            local_entry_tail->next = copy_entry;
+            copy_entry->prev = local_entry_tail;
+            local_entry_tail = copy_entry;
+        }
+
+        source_entries = source_entries->next;
+    }
+    entry_head = local_entry_head;
+    entry_tail = local_entry_tail;
+}
+
 void static free_entries(entry *head_entry) {
     entry *temp = head_entry;
     if (temp == NULL) {
         return;
     }
-    if (temp->next == NULL) {
-        free_values(temp);
+    entry *last;
+    while(temp !=NULL){
+        last=temp->next;
+        free(temp->values);
         free(temp);
-    } else if(temp->next!=NULL){
-        temp = temp->next;
-        while (temp->next != NULL) {
-            free_values(temp->prev);
-            free(temp->prev);
-            if(temp->next==NULL){
-                break;
-            }
-            temp = temp->next;
-        }
-        free_values(temp);
-        free(temp);
+        temp = last;
     }
+
 }
 
 /*
@@ -164,18 +188,13 @@ void command_bye() {
     if (temp == NULL) {
         exit(0);
     }
-    if (temp->prev == NULL) {
-        free_values(temp->entries); //If there is no next, then free the node
-        free(temp);
-    } else {
-        temp = temp->prev;
-        while (temp->prev != NULL) {
-            free_entries(temp->entries->next); //Otherwise, free the node and values before it, and move to next node
-            free(temp->next);
-            temp = temp->prev;
-        }
+    snapshot* last;
+    while(temp!=NULL){
+        last=temp->next;
         free_entries(temp->entries);
         free(temp);
+        temp=last;
+
     }
     exit(0);
 }
@@ -242,16 +261,20 @@ void command_list_entries() {
  * The Method that displays a list of all the available snapshots from newest to oldest.
  */
 void command_list_snapshots() {
-    snapshot *temp = snapshot_tail;
     if (snapshot_head == NULL) {
         printf("no snapshots\n\n");
         return;
     }
-    while (temp->prev != NULL) {
+    snapshot *temp = snapshot_tail;
+    if (temp->prev == NULL) {
         printf("%d\n", temp->id);
-        temp = temp->prev;
+    } else {
+        while (temp->prev != NULL) {
+            printf("%d\n", temp->id);
+            temp = temp->prev;
+        }
     }
-    printf("%d\n", temp->id);
+
     printf("\n");
 }
 
@@ -279,8 +302,7 @@ void command_get(char **cmd) {
     printf("]\n\n");
 
 }
-
-void del_method(entry *source) {
+void del_method(entry * source){
     entry *prev = source->prev;
     entry *next = source->next;
     if (prev == NULL && next == NULL) {
@@ -300,7 +322,6 @@ void del_method(entry *source) {
     free_values(source);
     free(source);
 }
-
 /*
  * Method that calls the del method when the user wants to delete the key.
  */
@@ -313,18 +334,36 @@ void command_del(char **cmd) {
     del_method(del_val);
     printf("ok\n\n");
 }
-
-void purge_del(entry *source, char *key) {
+entry * purge_del(entry *source, char *key) {
+    entry * head = source;
     entry *purge_val = find_key(source, key);
     if (purge_val == NULL) {
-        return;
+        return NULL;
     }
     entry *prev = purge_val->prev;
     entry *next = purge_val->next;
-    prev->next = next;
-    next->prev = prev;
-    free_values(purge_val);
-    free(purge_val);
+    if(prev == NULL && next == NULL){
+        free_values(purge_val);
+        free(purge_val);
+        return NULL;
+    }
+    if(prev!=NULL && next==NULL){
+        prev->next=NULL;
+        return head;
+    }
+    if(prev==NULL && next!=NULL){
+        head = next;
+        return head;
+    }
+    if(prev != NULL && next != NULL){
+        prev->next = next;
+        next->prev = prev;
+        free_values(purge_val);
+        free(purge_val);
+        return head;
+    }
+    return head;
+
 }
 
 void command_purge(char **cmd) {
@@ -343,12 +382,12 @@ void command_purge(char **cmd) {
 
     del_method(check);
     while (temp->next != NULL) {
-        check = find_key(temp->entries, key);
-        if (check == NULL) {
-            temp = temp->next;
+        check = find_key(temp->entries,key);
+        if(check==NULL){
+            temp=temp->next;
             continue;
         }
-        purge_del(temp->entries, key);
+        temp->entries = purge_del(temp->entries, key);
         temp = temp->next;
     }
     printf("ok\n\n");
@@ -586,27 +625,6 @@ void command_drop(char **cmd) {
     printf("ok\n\n");
 }
 
-void command_rollback(char **cmd) {
-    int id = atoi(cmd[1]);
-    snapshot *temp = find_snapshot(id);
-    if (temp == NULL) {
-        printf("no such snapshot\n\n");
-        return;
-    }
-    if(temp!=NULL){
-        while(snapshot_tail->id!=id){
-            snapshot * prev = snapshot_tail->prev;
-            free_entries(snapshot_tail->entries);
-            snapshot_tail = prev;
-        }
-    }
-    entry * head = entry_head;
-    free_entries(head);
-    populate_snapshot(snapshot_tail->entries);
-
-    printf("ok\n\n");
-}
-
 void command_checkout(char **cmd) {
     int id = atoi(cmd[1]);
     snapshot *source = find_snapshot(id);
@@ -614,9 +632,49 @@ void command_checkout(char **cmd) {
         printf("no such snapshot\n\n");
         return;
     }
+#if debug1
+    printf("The entries within the snapshot are");
+    entry* tmp = source->entries;
+    for(int i=0;tmp!=NULL;i++){
+        puts("*******");
+        printf("Found entry with address %p\n",tmp);
+        printf("Found entry with previous address %p\n",tmp->prev);
+        printf("Found entry with next address %p\n",tmp->next);
+        printf("Found entry with key %s\n",tmp->key);
+        puts("*******");
+
+        tmp=tmp->next;
+    }
+#endif
     free_entries(entry_head);
-    entry_head = populate_snapshot(source->entries);
+    populate_entry_head(source->entries);
     printf("ok\n\n");
+}
+
+void command_rollback(char **cmd) {
+    //TODO:Fix
+    int id = atoi(cmd[1]);
+    snapshot *target = find_snapshot(id);
+    if (target == NULL) {
+        printf("no such snapshot\n\n");
+        return;
+    }
+    if(target == snapshot_tail){
+        command_checkout(cmd);
+        return;
+    }
+    snapshot * delete = target->next;
+    delete->prev = NULL;
+    snapshot_tail = target;
+    snapshot_tail->next=NULL;
+    snapshot * temp;
+    while(delete!=NULL) {
+        temp = delete->next;
+        free_entries(delete->entries);
+        free(delete);
+        delete = temp;
+    }
+    command_checkout(cmd);
 }
 
 void command_snapshot() {
@@ -635,6 +693,18 @@ void command_snapshot() {
         snapshot_tail = new_snap;
     }
     printf("saved as snapshot %d\n\n", snapshot_id);
+#if debug1
+    printf("The entries within the snapshot are");
+    entry* tmp = snapshot_head->entries;
+    for(int i=0;tmp!=NULL;i++){
+        printf("Found entry with address %p\n",tmp);
+        printf("Found entry with previous address %p\n",tmp->prev);
+        printf("Found entry with next address %p\n",tmp->next);
+
+        printf("Found entry with key %s\n",tmp->key);
+        tmp=tmp->next;
+    }
+#endif
     snapshot_id++;
 }
 
